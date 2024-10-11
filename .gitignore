@@ -81,3 +81,20 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,c++,windows
+
+# Ignore compiled object files
+*.o
+
+# Ignore compiled binaries
+*.out
+*.exe
+*.bin
+
+# Ignore all compiled files in any directory
+**/*.o
+**/*.out
+**/*.exe
+**/*.bin
+
+# Optionally, ignore build directories
+/build/
