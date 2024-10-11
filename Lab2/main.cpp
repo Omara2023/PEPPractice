@@ -13,10 +13,9 @@ int main() {
         std::cout << "Dealt card: " << card << "\n";
 
         // Deal a hand of 5 cards
-        std::vector<Card> hand = deck.DealHand();
         std::cout << "Dealt hand: ";
-        for (const auto& c : hand) {
-            std::cout << c << " - ";
+        for (int i = 0, j = 5; i < j; i++) {
+            std::cout << deck.DealCard() <<  std::endl;
         }
         std::cout << "\n";
 

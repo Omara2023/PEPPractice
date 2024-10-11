@@ -3,12 +3,12 @@
 #include <ctime>
 
 // Constructor: Initializes a deck with 1 pack of cards
-Deck::Deck() : cardsPerDeck(52), numDecks(1) {
+Deck::Deck() : cardsPerDeck(52), numDecks(1), deck(nullptr){
     CreateDeck();
 }
 
 // Constructor: Initializes a deck with n packs (max 10)
-Deck::Deck(uint8_t n) : cardsPerDeck(52), numDecks(n) {
+Deck::Deck(uint8_t n) : cardsPerDeck(52), numDecks(n), deck(nullptr) {
     if (n > 10) n = 10; // Maximum 10 decks
     CreateDeck();
 }
@@ -35,27 +35,45 @@ std::string Deck::rankToStr(uint8_t rank) const {
 
 // Creates a deck with the specified number of packs
 void Deck::CreateDeck() {
-    deck.clear();
+    if (deck) {
+        delete [] deck;
+    }
+    
+    uint16_t count = 0;
+    deck = new Card[Deck_size()];
     for (uint8_t n = 0; n < numDecks; ++n) {
         for (uint8_t suit = 0; suit < 4; ++suit) {
             for (uint8_t rank = 1; rank <= 13; ++rank) {
-                deck.push_back({rank, suit});
+                deck[count++] = {rank, suit};
             }
         }
     }
-    remainingCardCount = deck.size();
+    remainingCardCount = Deck_size();
     ShuffleDeck();
 }
+
+u_int16_t Deck::Deck_size() {
+    return cardsPerDeck * numDecks;
+}
+
+Deck::Iterator Deck::begin() {
+    return Iterator(deck);
+}
+
+Deck::Iterator Deck::end() {
+    return Iterator(deck + Deck_size());
+}
+
 
 // Shuffles the deck randomly
 void Deck::ShuffleDeck() {
     std::srand(std::time(0)); // Seed for randomness
-    std::random_shuffle(deck.begin(), deck.end());
+    std::random_shuffle(begin(), end());
 }
 
 // Deletes the current deck
 void Deck::DeleteDeck() {
-    deck.clear();
+    delete [] deck;
     remainingCardCount = 0;
 }
 
@@ -81,19 +99,10 @@ const Card Deck::DealCard() {
     if (remainingCardCount == 0) {
         throw std::out_of_range("No cards left in the deck");
     }
-    Card dealtCard = deck.back();
-    deck.pop_back();
-    --remainingCardCount;
+    Card dealtCard = deck[--remainingCardCount];    
     return dealtCard;
 }
 
-// Deals a hand of 5 cards and removes them from the deck
-const std::vector<Card> Deck::DealHand() {
-    if (remainingCardCount < 5) {
-        throw std::out_of_range("Not enough cards left for a hand");
-    }
-    std::vector<Card> hand(deck.end() - 5, deck.end());
-    deck.erase(deck.end() - 5, deck.end());
-    remainingCardCount -= 5;
-    return hand;
+Deck::~Deck() {
+    delete[] deck; //
 }
